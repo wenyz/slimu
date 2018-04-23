@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html class="landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px"
+      style="font-size:100%">
+
+<head>
+    <title>HMI测试系统Demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/colors/3.0.0/css/colors.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/gui-ui.min.css">
+    <link rel="stylesheet" href="css/bootstrap-gui.min.css">
+    <script src="https://cdn.bootcss.com/jquery/3.3.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/wen_hmi_test.css"/>
+<body>
+<div id="defaultId1" class=" gui-no ub-fv d-flex  ">
+    <div id="g788b3" class=" p-2 gui-ov-s-y uof-x col h-100  u3010c border">
+    </div>
+    <div id="gd4975" class=" p-2  uccf1a">
+        <div id="gf1f13" class="  u0c1e2">
+            <div>HMI测试系统Demo</div>
+        </div>
+        <div id="g3ca15" class=" p-2 d-flex  ue050c">
+            <div id="g4cc66" class=" mr-1  ud9b24">
+                <div>
+                    <button type="button" class="btn btn-success" id="startTest">开始测试</button>
+                </div>
+            </div>
+            <div id="g1b207" class=" mr-1  u9111f">
+                <div><input type="text" id="imgPath" class="form-control" placeholder="图片路径" value="D:\img\">
+                </div>
+            </div>
+            <div id="g4421e" class=" mr-1 ml-1  u1337e">
+                <div><input type="text" class="form-control" id="imgName" placeholder="图片名称" value="1.jpg"></div>
+            </div>
+            <div id="g7e41d" class=" ml-1  u4f7cd">
+                <div><input type="text" class="form-control" id="keyword" placeholder="关键词" value="地面"></div>
+            </div>
+        </div>
+        <div id="g395d7" class="  ud5d91">
+            <div id="c2f7fb" class=" p-2 d-flex  ue050c">
+                <div id="c279a3" class=" mr-1  ud9b24">
+                    <div>
+                        <button type="button" class="btn btn-success" id="plTest">批量测试</button>
+                    </div>
+                </div>
+                <div id="c57c41" class=" mr-1  u9111f">
+                    <div><input type="text" class="form-control" id="imgPath2" placeholder="图片路径"
+                                value="D:\img\"></div>
+                </div>
+                <div id="c5b7d4" class=" ml-1  u4f7cd">
+                    <div><input type="text" class="form-control" id="keyword2" placeholder="关键词逗号隔开"
+                                value="车,音乐,2,4,54,5,航空"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="g395d72" class="  ud5d91">
+            <div class=" p-2 d-flex  ue050c">
+                <div class=" mr-1  ud9b24">
+                    <div>
+                        <button type="button" class="btn btn-warning" id="clearContent">清空左侧内容</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class=" p-2 d-flex  ue050c">
+            <div class=" mr-1  ud9b24">
+                <div id="shibielv">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="height: 100%;width: 100%;max-width: none;">
+        <div class="modal-content" style="width: 80%;margin: 0 auto;">
+            <img src="images/default.jpg" height="100%">
+        </div>
+    </div><!-- /.modal -->
+</div>
+</body>
+<script language="JavaScript">
+    socket = new WebSocket("ws://localhost:8080/websocket");
+    var socket;
+    var btnIndex = 1;
+    //获得消息事件
+    var index = 0;
+    var imgIds = [];
+    if (typeof(WebSocket) == "undefined") {
+        console.log("您的浏览器不支持WebSocket");
+    } else {
+        console.log("您的浏览器支持WebSocket");
+        //实现化WebSocket对象，指定要连接的服务器地址与端口
+        //socket = new WebSocket("ws://localhost:9094/starManager/websocket/张三");
+        socket = new WebSocket("ws://localhost:8080/websocket");
+        //打开事件
+        socket.onopen = function () {
+            console.log("Socket 已打开");
+            //socket.send("这是来自客户端的消息" + location.href + new Date());
+        };
+
+        socket.onmessage = function (msg) {
+            var data = msg.data;
+            data = JSON.parse(data);
+            console.log(data);
+            var str = data.str;
+            if (!/^关键词/.test(str)) {
+                var keyword = $("#keyword").val();
+                if (btnIndex == 2) {
+                    keyword = $("#keyword2").val();
+                    keyword = keyword.split(",");
+                    keyword = keyword[index - 1 < 0 ? 0 : index - 1];
+                }
+                if(keyword){
+                    var reg = new RegExp(keyword, "g");
+                    str = str.replace(reg, '<span class="red ulev-w">' + keyword + '</span>');
+                }
+            }
+            if(/^识别率为/.test(str)){
+                $("#shibielv").text(str);
+            }
+            var img = data.src;
+            var stream = data.stream;
+            if (!str && !stream) {
+                imgIds.push(img);
+                var htm = '<div id="cfa96e' + index + '" class=" p-2 d-flex border mb-1 u9631d"> <div  class=" p-2 mr-1 ub11f9"> <div  class=" ub-img1 ua754f"> <div><img src=images/default.jpg width="100%"> </div> </div> </div> <div  class=" p-2 col uda138"> <div class=" u58390"> </div> </div> </div>';
+                $("#g788b3").append(htm);
+                index++;
+                $(".ua754f").click(function (ev) {
+                   var img = ev.target;
+                    openBigImg(img);
+                })
+            } else {
+                var htm2 = '<div>' + str + '</div>';
+                if (imgIds[index - 1 < 0 ? 0 : index - 1] == data.src) {
+                    $("#g788b3").children('#cfa96e' + (index - 1)).find(".u58390").append(htm2);
+                    if (stream) {
+                        $("#g788b3").children('#cfa96e' + (index - 1)).find("img").attr('src', "data:img/jpg;base64," + stream);
+                    }
+                }
+            }
+        };
+        //关闭事件
+        socket.onclose = function () {
+            console.log("Socket已关闭");
+        };
+        //发生了错误事件
+        socket.onerror = function () {
+            alert("Socket发生了错误");
+        }
+        function clear() {
+            index = 0;
+            imgIds = [];
+            $("#g788b3").html("");
+            $("#shibielv").text("");
+        }
+        $("#startTest").click(function () {
+            btnIndex = 1;
+            clear()
+            $.get("http://localhost:8080/one/", {
+                path: $("#imgPath").val(),
+                fileName: $("#imgName").val(),
+                keyword: $("#keyword").val()
+            }, function (result) {
+            });
+        })
+        $("#plTest").click(function () {
+            btnIndex = 2;
+            clear();
+            $.get("http://localhost:8080/all/", {
+                path: $("#imgPath2").val(),
+                keyword: $("#keyword2").val()
+            }, function (result) {
+            });
+        })
+        $("#clearContent").click(function () {
+            clear();
+        })
+
+        function openBigImg(img) {
+//            img = img.outerHTML.replace(/width.*"/,"height='100%'");
+            img = img.outerHTML;
+            $(".modal-content").html(img);
+            $('#myModal').modal({show:true,keyboard:true});
+        }
+
+//        $(window).unload(function () {
+//            socket.close();
+//        });
+
+//                                  $("#btnSend").click(function() {
+//                                      socket.send("这是来自客户端的消息" + location.href + new Date());
+//                                  });
+//
+//                                  $("#btnClose").click(function() {
+//                                      socket.close();
+//                                  });
+    }
+</script>
+</html>
