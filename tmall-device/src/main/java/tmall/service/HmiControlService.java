@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class HmiControlService {
 
     private static final Logger logger = LoggerFactory.getLogger(HmiControlService.class);
-    private static final String TOPIC_DEVICE = "test/hmi/001";
+    private static final String TOPIC_DEVICE = "/test/hmi/001";
     private static final String OPEN_AIR = "打开空调";
     private static final String ADJUST_AIR = "空调温度为23度";
     private static final String CLOSE_AIR = "关闭空调";
