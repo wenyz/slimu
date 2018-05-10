@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class HmiControlService {
 
     private static final Logger logger = LoggerFactory.getLogger(HmiControlService.class);
-    private static final String TOPIC_DEVICE = "/test/hmi/001";
+    private static final String TOPIC_DEVICE = "test/hmi/001";
     private static final String OPEN_AIR = "打开空调";
     private static final String ADJUST_AIR = "空调温度为23度";
     private static final String CLOSE_AIR = "关闭空调";
@@ -61,7 +61,7 @@ public class HmiControlService {
             resultFlg = false;
         }
 
-        analyzeAndExecuteQuery(paramMap,originalParamMap,result,resultFlg);
+        analyzeAndExecuteQuery(paramMap, originalParamMap, result, resultFlg);
 
         return result;
     }
@@ -75,6 +75,7 @@ public class HmiControlService {
                 message.setQos(0);
                 try {
                     mqttClient.publish(TOPIC_DEVICE, message);
+                    System.out.println("aaaaaaaaaaaaaaaaaaa" + OPEN_AIR);
                 } catch (Exception e) {
                     resultFlg = false;
                 }
@@ -83,6 +84,7 @@ public class HmiControlService {
                 message.setQos(0);
                 try {
                     mqttClient.publish(TOPIC_DEVICE, message);
+                    System.out.println("aaaaaaaaaaaaaaaaaaa" + OPEN_WINDOW);
                 } catch (Exception e) {
                     resultFlg = false;
                 }
@@ -104,33 +106,33 @@ public class HmiControlService {
                 } catch (Exception e) {
                     resultFlg = false;
                 }
-            }  else if (paramMap.get("action").equals("调节")) {
-                if (paramMap.get("items").equals("空调")) {
-                    MqttMessage message = new MqttMessage(ADJUST_AIR.getBytes());
-                    message.setQos(0);
-                    try {
-                        mqttClient.publish(TOPIC_DEVICE, message);
-                    } catch (Exception e) {
-                        resultFlg = false;
-                    }
-                }else   if (paramMap.get("items").equals("收音机")) {
-                    MqttMessage message = new MqttMessage(AJUST_RADIO.getBytes());
-                    message.setQos(0);
-                    try {
-                        mqttClient.publish(TOPIC_DEVICE, message);
-                    } catch (Exception e) {
-                        resultFlg = false;
-                    }
+            }
+        } else if (paramMap.get("action").equals("调节")) {
+            if (paramMap.get("items").equals("空调")) {
+                MqttMessage message = new MqttMessage(ADJUST_AIR.getBytes());
+                message.setQos(0);
+                try {
+                    mqttClient.publish(TOPIC_DEVICE, message);
+                } catch (Exception e) {
+                    resultFlg = false;
                 }
-            } else if (paramMap.get("action").equals("拨打")) {
-                if (paramMap.get("items").equals("电话")) {
-                    MqttMessage message = new MqttMessage(CALL_PHONE.getBytes());
-                    message.setQos(0);
-                    try {
-                        mqttClient.publish(TOPIC_DEVICE, message);
-                    } catch (Exception e) {
-                        resultFlg = false;
-                    }
+            } else if (paramMap.get("items").equals("收音机")) {
+                MqttMessage message = new MqttMessage(AJUST_RADIO.getBytes());
+                message.setQos(0);
+                try {
+                    mqttClient.publish(TOPIC_DEVICE, message);
+                } catch (Exception e) {
+                    resultFlg = false;
+                }
+            }
+        } else if (paramMap.get("action").equals("拨打")) {
+            if (paramMap.get("items").equals("电话")) {
+                MqttMessage message = new MqttMessage(CALL_PHONE.getBytes());
+                message.setQos(0);
+                try {
+                    mqttClient.publish(TOPIC_DEVICE, message);
+                } catch (Exception e) {
+                    resultFlg = false;
                 }
             }
         }
@@ -146,7 +148,7 @@ public class HmiControlService {
 
     }
 
-    private  MqttClient getMqttClient() throws Exception {
+    private MqttClient getMqttClient() throws Exception {
         String broker = "tcp://121.43.180.66:1883";
         String clientId = "Tmall-spirt-device-hmi";
         MemoryPersistence persistence = new MemoryPersistence();
