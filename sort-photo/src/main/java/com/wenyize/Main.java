@@ -38,12 +38,8 @@ public class Main {
 
         Locale.setDefault(Locale.ENGLISH);
         MainProcess process = new MainProcess(HashValueDataBase.getInstance());
-
         process.process("E://test//original");
-
         System.out.println(HashValueDataBase.getInstance().toJsonString());
-
-
     }
 
 

@@ -66,7 +66,7 @@ public class MainProcess {
 
     private String combineOutPath(Date date) {
         StringBuilder sb = new StringBuilder();
-        sb.append(HashValueDataBase.IMG_DATA_PATH);
+        sb.append(dataBase.getImgDataPath());
 
         Calendar ca = Calendar.getInstance();
         ca.setTime(date);
@@ -85,7 +85,7 @@ public class MainProcess {
 
     private int getMaxNum(Calendar date) {
         int max = 0;
-        File fff = new File(HashValueDataBase.IMG_DATA_PATH
+        File fff = new File(dataBase.getImgDataPath()
                 + date.get(Calendar.YEAR) + File.separator
                 + (date.get(Calendar.MONTH) + 1));
         if (fff.exists()) {
