@@ -20,7 +20,7 @@ public class MD5Util {
             String md5Hashcode32 = md5HashCode32(filePath);
 
             System.out.println(md5Hashcode + "：文件的md5值");
-            System.out.println(md5Hashcode32+"：文件32位的md5值");
+            System.out.println(md5Hashcode32 + "：文件32位的md5值");
 
             //System.out.println(-100 & 0xff);
         } catch (FileNotFoundException e) {
@@ -30,18 +30,20 @@ public class MD5Util {
 
     /**
      * 获取文件的md5值 ，有可能不是32位
-     * @param filePath	文件路径
+     *
+     * @param filePath 文件路径
      * @return
      * @throws FileNotFoundException
      */
-    public static String md5HashCode(String filePath) throws FileNotFoundException{
+    public static String md5HashCode(String filePath) throws FileNotFoundException {
         FileInputStream fis = new FileInputStream(filePath);
         return md5HashCode(fis);
     }
 
     /**
      * 保证文件的MD5值为32位
-     * @param filePath	文件路径
+     *
+     * @param filePath 文件路径
      * @return
      * @throws FileNotFoundException
      */
@@ -52,6 +54,7 @@ public class MD5Util {
 
     /**
      * java获取文件的md5值
+     *
      * @param fis 输入流
      * @return
      */
@@ -68,7 +71,7 @@ public class MD5Util {
             }
             fis.close();
             //转换并返回包含16个元素字节数组,返回数值范围为-128到127
-            byte[] md5Bytes  = md.digest();
+            byte[] md5Bytes = md.digest();
             BigInteger bigInt = new BigInteger(1, md5Bytes);//1代表绝对值
             return bigInt.toString(16);//转换为16进制
         } catch (Exception e) {
@@ -79,6 +82,7 @@ public class MD5Util {
 
     /**
      * java计算文件32位md5值
+     *
      * @param fis 输入流
      * @return
      */
@@ -96,7 +100,7 @@ public class MD5Util {
             fis.close();
 
             //转换并返回包含16个元素字节数组,返回数值范围为-128到127
-            byte[] md5Bytes  = md.digest();
+            byte[] md5Bytes = md.digest();
             StringBuffer hexValue = new StringBuffer();
             for (int i = 0; i < md5Bytes.length; i++) {
                 int val = ((int) md5Bytes[i]) & 0xff;//解释参见最下方
