@@ -17,7 +17,7 @@ public class MqttBean {
             }
 
 
-            mqttClient.subscribe("/test/hmi/001");
+            mqttClient.subscribe("test/hmi/001");
             mqttClient.setCallback(new MqttCallback() {
                 public void connectionLost(Throwable throwable) {
 
