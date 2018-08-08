@@ -14,9 +14,11 @@ public class HashValueDataBase implements Serializable {
     private String imgDataPath = basePath + File.separator + "photo";
     private String vDataPath = basePath + File.separator + "video";
     private static transient HashValueDataBase dataBase;
-    private Map<String, HashFile> fileMap = new HashMap<>();
+    private Map<String, HashFile> fileMap;
 
     private HashValueDataBase() {
+        fileMap= new HashMap<>();
+        System.out.println("1111111111");
     }
 
     public static synchronized HashValueDataBase getInstance() {
@@ -38,15 +40,18 @@ public class HashValueDataBase implements Serializable {
             bis.read(bytes);
             String ttt = StringUtil.fromStream(new ByteArrayInputStream(bytes));
             //System.out.println();
-            System.out.println("aaaaaa"+ttt );
+            //System.out.println("aaaaaa"+ttt );
             HashValueDataBase kkkk = JSON.parseObject(ttt, HashValueDataBase.class);
-            System.out.println("kkkkk" + kkkk.toJsonString());
+            //fileMap = kkkk.getFileMap();
+            //dataBase = kkkk;
+            //System.out.println("kkkkk" + kkkk.toJsonString());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     public void write() {
         try (BufferedOutputStream bos = new BufferedOutputStream(
