@@ -15,10 +15,13 @@ public class HashValueDataBase implements Serializable {
     private static transient HashValueDataBase dataBase;
     private String vDataPath = basePath + File.separator + "video";
     private String repeatPath = basePath + File.separator + "chongfu";
+    private String logPath = basePath + File.separator + ".log";
     private static final Map<String, HashFile> fileMap = new HashMap<>();
 
+    private FileWriter logWriter;
+
     private HashValueDataBase() {
-        System.out.println("1111111111");
+
     }
 
     public static synchronized HashValueDataBase getInstance() {
@@ -34,7 +37,6 @@ public class HashValueDataBase implements Serializable {
         try (RandomAccessFile reader = new RandomAccessFile(databaseFilePath, "r")) {
             String line;
             while ((line = reader.readLine()) != null) {
-                System.out.println(line);
                 ImageFile file = ImageFile.fromLine(line);
                 tempMap.put(file.getHashValue(), file);
             }
@@ -122,5 +124,32 @@ public class HashValueDataBase implements Serializable {
 
     public boolean isExists(String key) {
         return fileMap.get(key) == null ? false : true;
+    }
+
+    public String getLogPath() {
+        return logPath;
+    }
+
+    public void setLogWriter(FileWriter logWriter) {
+        this.logWriter = logWriter;
+    }
+    public void closeLogWriter(){
+        try {
+            this.logWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void log(String msg){
+        System.out.println(msg);
+        if(logWriter != null){
+            try {
+                logWriter.write(msg);
+                logWriter.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -144,18 +144,17 @@ public class MainProcess {
                         //DateFormat dateFormat = new SimpleDateFormat(" yyyy:MM:dd HH:mm:ss");
                         DateFormat dateFormat = new SimpleDateFormat(" EEE MMM dd HH:mm:ss X:00 yyyy", Locale.ENGLISH);
                         try {
-                            System.out.println(temp[1]);
                             result = dateFormat.parse(temp[1]);
                             timeExistFlg = true;
                         } catch (ParseException e) {
-                            System.out.println(jpegFile.getName() + ": 时间转换错误");
+                            dataBase.log(jpegFile.getName() + ": 时间转换错误");
                             e.printStackTrace();
                         }
                     }
                 }
             }
             if (!timeExistFlg) {
-                System.out.println(jpegFile.getName() + ": 该图片没有拍摄时间");
+                dataBase.log(jpegFile.getName() + ": 该图片没有拍摄时间");
             }
         } catch (JpegProcessingException e) {
             e.printStackTrace();
@@ -212,7 +211,7 @@ public class MainProcess {
     private void moveFile(String oldPath, String newPath) throws Exception {
         copyFile(oldPath, newPath);
         delFile(oldPath);
-        System.out.println("文件移动成功：" + oldPath + "===>" + newPath);
+        dataBase.log("文件移动成功：" + oldPath + "===>" + newPath);
     }
 
     private void dealFile(File f1) {
@@ -242,7 +241,7 @@ public class MainProcess {
                     if (!f3.exists()) {
                         f3.mkdirs();
                     }
-                    System.out.println("文件： [" + f1.getName() + "] 重复，已经移动到：【" + tempOut + "】");
+                    dataBase.log("文件： [" + f1.getName() + "] 重复，已经移动到：【" + tempOut + "】");
                     moveFile(f1.getAbsolutePath(), tempOut);
                     // md5 不重复，合并文件夹
                 } else {
@@ -257,15 +256,15 @@ public class MainProcess {
                         dataBase.add(md5s, new ImageFile( md5s,tempOut));
                         moveFile(f1.getAbsolutePath(), tempOut);
                     } else {
-                        System.out.println("文件： [" + f1.getName() + "] 没有时间属性，没办法整理，请手动整理。");
+                        dataBase.log("文件： [" + f1.getName() + "] 没有时间属性，没办法整理，请手动整理。");
                     }
                 }
             } catch (Exception e) {
                 dataBase.remove(md5s);
-                System.out.println("文件移动失败：" + f1.getAbsolutePath() + "===>" + tempOut);
+                dataBase.log("文件移动失败：" + f1.getAbsolutePath() + "===>" + tempOut);
             }
         } else {
-            System.out.println("不支持的文件格式" + f1.getName() + "] 现在支持PNG,jpeg。");
+            dataBase.log("不支持的文件格式" + f1.getName() + "] 现在支持PNG,jpeg。");
         }
     }
 

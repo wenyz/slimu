@@ -1,6 +1,8 @@
 package com.wenyize;
 
 import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Locale;
 import java.util.Properties;
@@ -38,9 +40,16 @@ public class Main {
 
         Locale.setDefault(Locale.ENGLISH);
         HashValueDataBase dataBase = HashValueDataBase.getInstance();
+        try {
+            FileWriter logWriter =new FileWriter(dataBase.getLogPath(),true);
+            dataBase.setLogWriter(logWriter);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         MainProcess process = new MainProcess(dataBase);
         process.process("E://test//original");
-        System.out.println(dataBase.toJsonString());
+
+        dataBase.closeLogWriter();
     }
 
 
