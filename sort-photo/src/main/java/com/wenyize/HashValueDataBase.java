@@ -5,6 +5,7 @@ import com.drew.lang.StringUtil;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class HashValueDataBase implements Serializable {
@@ -14,10 +15,9 @@ public class HashValueDataBase implements Serializable {
     private String imgDataPath = basePath + File.separator + "photo";
     private String vDataPath = basePath + File.separator + "video";
     private static transient HashValueDataBase dataBase;
-    private Map<String, HashFile> fileMap;
+    private  Map<String, HashFile> fileMap = new HashMap<>();
 
     private HashValueDataBase() {
-        fileMap= new HashMap<>();
         System.out.println("1111111111");
     }
 
@@ -42,7 +42,13 @@ public class HashValueDataBase implements Serializable {
             //System.out.println();
             //System.out.println("aaaaaa"+ttt );
             HashValueDataBase kkkk = JSON.parseObject(ttt, HashValueDataBase.class);
-            //fileMap = kkkk.getFileMap();
+
+//            for(){
+//
+//            }
+//
+//            fileMap =
+            kkkk.getFileMap().values();
             //dataBase = kkkk;
             //System.out.println("kkkkk" + kkkk.toJsonString());
         } catch (FileNotFoundException e) {
@@ -50,6 +56,7 @@ public class HashValueDataBase implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
 
