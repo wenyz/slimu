@@ -1,22 +1,23 @@
 package com.wenyize;
 
 import com.alibaba.fastjson.JSON;
-import com.drew.lang.StringUtil;
 
 import java.io.*;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
+// TODO 设计不当 有内存泄漏风险
 public class HashValueDataBase implements Serializable {
 
-    private String basePath = "E://test//des";
-    private String databaseFilePath = basePath + File.separator + ".hashdata";
+    private static final String basePath = "E://test//des";
+    private static final String databaseFilePath = basePath + File.separator + ".hashdata";
     private String imgDataPath = basePath + File.separator + "photo";
-    private String vDataPath = basePath + File.separator + "video";
     private static transient HashValueDataBase dataBase;
-    private  Map<String, HashFile> fileMap = new HashMap<>();
+    private String vDataPath = basePath + File.separator + "video";
+    private static final Map<String, HashFile> fileMap = new HashMap<>();
 
+    // TODO 本来应该是单例，但是碰到JSON对单例支持好像有bug
+    // 需要更改存储结构才行
     private HashValueDataBase() {
         System.out.println("1111111111");
     }
@@ -26,51 +27,40 @@ public class HashValueDataBase implements Serializable {
             dataBase = new HashValueDataBase();
         }
         return dataBase;
-
     }
+
 
     public void load() {
-
-        File ff = new File(databaseFilePath);
-        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(ff))) {
-
-            Long aaa = ff.length();
-            // TODO 当文件查过int大小时，需要寻找别的处理方法
-            byte[] bytes = new byte[aaa.intValue()];
-            bis.read(bytes);
-            String ttt = StringUtil.fromStream(new ByteArrayInputStream(bytes));
-            //System.out.println();
-            //System.out.println("aaaaaa"+ttt );
-            HashValueDataBase kkkk = JSON.parseObject(ttt, HashValueDataBase.class);
-
-//            for(){
-//
-//            }
-//
-//            fileMap =
-            kkkk.getFileMap().values();
-            //dataBase = kkkk;
-            //System.out.println("kkkkk" + kkkk.toJsonString());
+        Map<String, HashFile> tempMap = new HashMap<>();
+        try (RandomAccessFile reader = new RandomAccessFile(databaseFilePath, "r")) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                ImageFile file = ImageFile.fromLine(line);
+                tempMap.put(file.getHashValue(), file);
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        fileMap.clear();
+        fileMap.putAll(tempMap);
     }
 
-
+    // TODO 一次性读，一次性写，太SB了，想想换个别的方法
     public void write() {
-        try (BufferedOutputStream bos = new BufferedOutputStream(
-                new FileOutputStream(databaseFilePath))) {
-            bos.write(toJsonString().getBytes());
-            bos.flush();
+        try (RandomAccessFile writer = new RandomAccessFile(databaseFilePath, "rw")) {
+            for (HashFile file : fileMap.values()) {
+                writer.write(file.toLine().getBytes());
+            }
+            writer.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void refresh() {
@@ -123,9 +113,6 @@ public class HashValueDataBase implements Serializable {
         return vDataPath;
     }
 
-    public static HashValueDataBase getDataBase() {
-        return dataBase;
-    }
 
     public Map<String, HashFile> getFileMap() {
         return fileMap;

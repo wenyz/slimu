@@ -1,6 +1,6 @@
 package com.wenyize;
 
-public class VideoFile implements HashFile {
+public class VideoFile extends AbstractHashFile {
     private String absolutePath;
     private String hashValue;
 
@@ -23,5 +23,10 @@ public class VideoFile implements HashFile {
 
     public void setHashValue(String hashValue) {
         this.hashValue = hashValue;
+    }
+
+    @Override
+    public String toLine() {
+        return null;
     }
 }

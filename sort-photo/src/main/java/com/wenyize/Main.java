@@ -37,9 +37,10 @@ public class Main {
     public static void main(String[] args) {
 
         Locale.setDefault(Locale.ENGLISH);
-        MainProcess process = new MainProcess(HashValueDataBase.getInstance());
+        HashValueDataBase dataBase = HashValueDataBase.getInstance();
+        MainProcess process = new MainProcess(dataBase);
         process.process("E://test//original");
-        System.out.println(HashValueDataBase.getInstance().toJsonString());
+        System.out.println(dataBase.toJsonString());
     }
 
 
