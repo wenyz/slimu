@@ -4,7 +4,6 @@ import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.imaging.png.PngMetadataReader;
 import com.drew.imaging.png.PngProcessingException;
-
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
@@ -24,6 +23,11 @@ public class MainProcess {
 
 
     public void process(String inputPath) {
+
+        File f = new File(dataBase.getDatabaseFilePath());
+        if(f.exists()){
+            dataBase.load();
+        }
 
         Stack<String> stack = new Stack<>();
         stack.push(inputPath);
@@ -46,8 +50,10 @@ public class MainProcess {
             } else {
                 dealFile(f1);
             }
-
         }
+
+        // 写入文件
+        dataBase.write();
 
 
 //        for (String tempF : inputPaths) {
@@ -108,15 +114,15 @@ public class MainProcess {
      * @date 2015-7-25 下午7:30:47
      * [Exif IFD0] Date/Time - 2017:04:14 21:59:09
      */
-    private Date readPicDate(File jpegFile,String extension) {
+    private Date readPicDate(File jpegFile, String extension) {
         //= new File("G:\\photo\\新建文件夹 (2)\\170414.35.JPG");
         Metadata metadata = null;
         Date result = null;
         boolean timeExistFlg = false;
         try {
-            if( type.jpg.name().equals(extension)){
+            if (type.jpg.name().equals(extension)) {
                 metadata = JpegMetadataReader.readMetadata(jpegFile);
-            }else if( type.png.name().equals(extension)) {
+            } else if (type.png.name().equals(extension)) {
                 try {
                     metadata = PngMetadataReader.readMetadata(jpegFile);
                 } catch (PngProcessingException e) {
@@ -136,7 +142,7 @@ public class MainProcess {
 
                         String[] temp = tag.toString().split("-");
                         //DateFormat dateFormat = new SimpleDateFormat(" yyyy:MM:dd HH:mm:ss");
-                        DateFormat dateFormat = new SimpleDateFormat(" EEE MMM dd HH:mm:ss X:00 yyyy",Locale.ENGLISH);
+                        DateFormat dateFormat = new SimpleDateFormat(" EEE MMM dd HH:mm:ss X:00 yyyy", Locale.ENGLISH);
                         try {
                             System.out.println(temp[1]);
                             result = dateFormat.parse(temp[1]);
@@ -215,34 +221,48 @@ public class MainProcess {
                 , f1.getName().length());
 
         boolean extFlg = false;
-        for(type aa:type.values()){
-            if(aa.name().equals(ext.toLowerCase())){
+        for (type aa : type.values()) {
+            if (aa.name().equals(ext.toLowerCase())) {
                 extFlg = true;
                 break;
             }
         }
 
         if (extFlg) {
-            Date dateString = readPicDate(f1,ext);
-            if (dateString != null) {
-                String tempOut = combineOutPath(dateString) + "." + ext;
-                String fds = tempOut.substring(0, tempOut.lastIndexOf(File.separator));
-                File f3 = new File(fds);
-                if (!f3.exists()) {
-                    f3.mkdirs();
-                }
-
-                String md5s = "";
-                try {
-                    md5s = MD5Util.md5HashCode(new FileInputStream(f1));
-                    dataBase.add(md5s, new ImageFile(tempOut, md5s));
+            String md5s = "";
+            String tempOut = "";
+            try {
+                md5s = MD5Util.md5HashCode(new FileInputStream(f1));
+                // md5 重复，已经存在的文件
+                // 出log，并且移动到一个统一的目录下
+                if (dataBase.isExists(md5s)) {
+                    tempOut = dataBase.getRepeatPath() + File.separator + f1.getName() + System.currentTimeMillis() + "." + ext;
+                    String fds = tempOut.substring(0, tempOut.lastIndexOf(File.separator));
+                    File f3 = new File(fds);
+                    if (!f3.exists()) {
+                        f3.mkdirs();
+                    }
+                    System.out.println("文件： [" + f1.getName() + "] 重复，已经移动到：【" + tempOut + "】");
                     moveFile(f1.getAbsolutePath(), tempOut);
-                } catch (Exception e) {
-                    dataBase.remove(md5s);
-                    System.out.println("文件移动失败：" + f1.getAbsolutePath() + "===>" + tempOut);
+                    // md5 不重复，合并文件夹
+                } else {
+                    Date dateString = readPicDate(f1, ext);
+                    if (dateString != null) {
+                        tempOut = combineOutPath(dateString) + "." + ext;
+                        String fds = tempOut.substring(0, tempOut.lastIndexOf(File.separator));
+                        File f3 = new File(fds);
+                        if (!f3.exists()) {
+                            f3.mkdirs();
+                        }
+                        dataBase.add(md5s, new ImageFile( md5s,tempOut));
+                        moveFile(f1.getAbsolutePath(), tempOut);
+                    } else {
+                        System.out.println("文件： [" + f1.getName() + "] 没有时间属性，没办法整理，请手动整理。");
+                    }
                 }
-            } else {
-                System.out.println("文件： [" + f1.getName() + "] 没有时间属性，没办法整理，请手动整理。");
+            } catch (Exception e) {
+                dataBase.remove(md5s);
+                System.out.println("文件移动失败：" + f1.getAbsolutePath() + "===>" + tempOut);
             }
         } else {
             System.out.println("不支持的文件格式" + f1.getName() + "] 现在支持PNG,jpeg。");
@@ -250,8 +270,7 @@ public class MainProcess {
     }
 
 
-
-    enum type{
-        jpg,png
+    enum type {
+        jpg, png
     }
 }

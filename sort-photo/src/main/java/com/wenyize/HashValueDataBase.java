@@ -14,10 +14,9 @@ public class HashValueDataBase implements Serializable {
     private String imgDataPath = basePath + File.separator + "photo";
     private static transient HashValueDataBase dataBase;
     private String vDataPath = basePath + File.separator + "video";
+    private String repeatPath = basePath + File.separator + "chongfu";
     private static final Map<String, HashFile> fileMap = new HashMap<>();
 
-    // TODO 本来应该是单例，但是碰到JSON对单例支持好像有bug
-    // 需要更改存储结构才行
     private HashValueDataBase() {
         System.out.println("1111111111");
     }
@@ -113,8 +112,15 @@ public class HashValueDataBase implements Serializable {
         return vDataPath;
     }
 
+    public String getRepeatPath() {
+        return repeatPath;
+    }
 
     public Map<String, HashFile> getFileMap() {
         return fileMap;
+    }
+
+    public boolean isExists(String key) {
+        return fileMap.get(key) == null ? false : true;
     }
 }
