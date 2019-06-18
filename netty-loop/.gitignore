@@ -28,3 +28,6 @@ build/
 .gradle/
 
 venv/
+
+gen-java/
+gen-py/

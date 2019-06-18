@@ -11,7 +11,12 @@ import org.apache.thrift.transport.TTransport;
 public class ThriftClient {
 
     public static void main(String[] args) {
-        TTransport transport = new TFramedTransport(new TSocket("localhost",8899),600);
+
+        /*
+        I had the same issue. Replacing "localhost" with the ip fixed it.
+          The reason was: Python used TCPV6, where Java used TCP.
+         */
+        TTransport transport = new TFramedTransport(new TSocket("127.0.0.1",8899),600);
         TProtocol protocol = new TCompactProtocol(transport);
         PersonService.Client client = new PersonService.Client(protocol);
 
@@ -33,6 +38,7 @@ public class ThriftClient {
             client.savePerson(person1);
 
         }catch (Exception ex){
+            ex.printStackTrace();
 
         }finally {
 

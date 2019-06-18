@@ -11,7 +11,7 @@ from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TCompactProtocol
 try:
-    tSocket = TSocket.TSocket('localhost',8899)
+    tSocket = TSocket.TSocket('127.0.0.1',8899)
     tSocket.setTimeout(600)
 
     transport = TTransport.TFramedTransport(tSocket)
@@ -37,4 +37,4 @@ try:
 
 
 except Thrift.TException as tx:
-    print("%s",tx.message)
+    print(tx.message)
