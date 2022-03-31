@@ -11,7 +11,7 @@
 
     <properties>
         <!--spring core -->
-        <org.springframework.version>4.3.1.RELEASE</org.springframework.version>
+        <org.springframework.version>5.3.18</org.springframework.version>
     </properties>
     <repositories>
         <repository>
